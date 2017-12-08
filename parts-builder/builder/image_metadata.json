@@ -1,7 +1,7 @@
 {
   "labels": [
-    {"io.k8s.display-name":"Buildout Packages"},
-    {"io.k8s.description":"S2I builder for installing packages using buildout."},
+    {"io.k8s.display-name":"Jupyter Notebook parts builder"},
+    {"io.k8s.description":"Jupyter Notebook parts builder."},
     {"io.openshift.s2i.scripts-url":"image:///opt/app-root/builder"},
     {"io.s2i.scripts-url":"image:///opt/app-root/builder"},
     {"io.openshift.tags":"builder,buildout"}

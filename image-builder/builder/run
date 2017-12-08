@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -x
+
+set -eo pipefail
+
+# Sleep for now.
+
+sleep 60
