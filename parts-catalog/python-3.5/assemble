@@ -8,4 +8,4 @@ mkdir -p /opt/app-root/packages/parts
 
 mv /opt/app-root/src/.s2i/packages/parts/python-3.5 /opt/app-root/packages/parts
 
-cp -rs /opt/app-root/packages/parts/python-3.5/bin /opt/app-root/bin
+cp -rs /opt/app-root/packages/parts/python-3.5/bin/. /opt/app-root/bin
