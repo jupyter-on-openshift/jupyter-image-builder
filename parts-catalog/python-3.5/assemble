@@ -1,5 +1,9 @@
 #!/bin/bash
 
+set -x
+
+set -eo pipefail
+
 mkdir -p /opt/app-root/packages/parts
 
 mv /opt/app-root/src/.s2i/packages/parts/python-3.5 /opt/app-root/packages/parts
