@@ -4,10 +4,10 @@ set -x
 
 set -eo pipefail
 
-mkdir -p /opt/app-root/packages/parts
+mkdir -p /opt/app-root/packages
 
-mv /opt/app-root/src/.s2i/packages/parts/python-3.6 /opt/app-root/packages/parts
+mv /opt/app-root/src/.s2i/packages/python-3.6 /opt/app-root/packages
 
 cat >> /opt/app-root/etc/scl_enable << EOF
-. /opt/app-root/packages/parts/python-3.6/activate
+. /opt/app-root/packages/python-3.6/activate
 EOF

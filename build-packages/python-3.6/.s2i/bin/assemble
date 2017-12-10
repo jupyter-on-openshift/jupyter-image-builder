@@ -1,0 +1,94 @@
+#!/bin/bash
+
+set -x
+
+set -eo pipefail
+
+XYZ=3.6.3
+
+XY=`echo $XYZ | sed -e 's/\.[0-9]*$//'`
+
+SRC_DIR=/tmp/src
+BLD_DIR=/tmp/build
+
+DEST_DIR=/opt/app-root/packages/python-$XY
+
+DOWNLOAD_URL=https://www.python.org/ftp/python/$XYZ/Python-$XYZ.tgz
+
+CONFIG_ARGS="--prefix=$DEST_DIR --enable-ipv6 \
+    --with-dbmliborder=bdb:gdbm --with-system-expat \
+    --with-system-ffi --with-fpectl"
+
+# Packages need to be placed under /opt/app-root/packages. We need to
+# leave an assemble and activate script. The assemble script moves any
+# packages into place in a subsequent chained build. The activate script
+# sets up any environment for using the package.
+
+mkdir -p $DEST_DIR
+
+mv /tmp/src/assemble $DEST_DIR
+mv /tmp/src/activate $DEST_DIR
+
+# Build Python into temporary directory. We will delete the directory
+# when done so only Python installation remains in the image.
+
+mkdir $BLD_DIR
+
+curl -sSL -o $BLD_DIR/python.tar.gz $DOWNLOAD_URL
+
+tar -xC $BLD_DIR --strip-components=1 -f $BLD_DIR/python.tar.gz
+
+cd $BLD_DIR
+
+# We build Python with shared library support first. We then rebuild
+# just the python executable as a static executable.
+
+./configure $CONFIG_ARGS --enable-shared
+
+LD_RUN_PATH=$DEST_DIR/lib
+export LD_RUN_PATH
+
+make
+make install
+make distclean
+
+./configure $CONFIG_ARGS
+
+make
+make altbininstall
+
+unset LD_RUN_PATH
+
+# Install pip, ensuring that setuptools and wheel packages are up to
+# date. Also create symlinks for non versioned and major version of
+# python and pip programs. We are assuming here that python program
+# should always map to Python 3 and that Python 2 would be the alternate
+# Python installation.
+
+cd $DEST_DIR/bin
+
+PATH=$DEST_DIR/bin:$PATH
+
+curl -sSL 'https://bootstrap.pypa.io/get-pip.py' | python$XY
+
+ln -fs python$XY python
+ln -fs python$XY python3
+
+ln -fs pip$XY pip
+ln -fs pip$XY pip3
+
+pip3 install --no-cache-dir -U setuptools wheel
+
+# Remove tests and compiled Python files to try and reduce the size
+# of the image. We are going to be running long lived process so not
+# really any benefit from precompiling all Python files.
+
+find $DEST_DIR/lib \
+    \( -type d -and -name test -or -name tests \) -or \
+    \( -type f -and -name '*.pyc' -or -name '*.pyo' \) | \
+    xargs rm -rf
+
+# Remove build directory and input files to S2I build.
+
+rm -rf $BLD_DIR
+rm -rf $SRC_DIR
