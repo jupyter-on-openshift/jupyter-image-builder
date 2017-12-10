@@ -7,7 +7,7 @@ To build the image, run:
 
 ```
 oc new-build --name packages-python-36 \
-   centos/python-36-centos7~https://github.com/jupyter-on-openshift/jupyter-notebook-builder \
+   centos/python-35-centos7~https://github.com/jupyter-on-openshift/jupyter-notebook-builder \
    --context-dir build-packages/python-3.6
 ```
 
