@@ -8,7 +8,6 @@ XYZ=3.5.4
 
 XY=`echo $XYZ | sed -e 's/\.[0-9]*$//'`
 
-SRC_DIR=/tmp/src
 BLD_DIR=/tmp/build
 
 DEST_DIR=/opt/app-root/packages/python-$XY
@@ -26,8 +25,8 @@ CONFIG_ARGS="--prefix=$DEST_DIR --enable-ipv6 \
 
 mkdir -p $DEST_DIR
 
-mv /tmp/src/assemble $DEST_DIR
-mv /tmp/src/activate $DEST_DIR
+mv assemble $DEST_DIR
+mv activate $DEST_DIR
 
 # Build Python into temporary directory. We will delete the directory
 # when done so only Python installation remains in the image.
@@ -91,4 +90,3 @@ find $DEST_DIR/lib \
 # Remove build directory and input files to S2I build.
 
 rm -rf $BLD_DIR
-rm -rf $SRC_DIR
