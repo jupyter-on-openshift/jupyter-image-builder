@@ -77,7 +77,7 @@ ln -fs python$XY python2
 ln -fs pip$XY pip
 ln -fs pip$XY pip2
 
-pip3 install --no-cache-dir -U setuptools wheel
+pip2 install --no-cache-dir -U setuptools wheel
 
 # Remove tests and compiled Python files to try and reduce the size
 # of the image. We are going to be running long lived process so not
