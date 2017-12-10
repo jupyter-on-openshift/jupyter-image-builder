@@ -1,0 +1,28 @@
+#!/bin/bash
+
+set -x
+
+set -eo pipefail
+
+# Move files from where S2I injects them to src directory for building.
+
+echo "Moving source files into place."
+
+(shopt -s dotglob; mv /tmp/src/* ./)
+
+# Run the build script.
+
+echo "Running the build script for the packages."
+
+if [ ! -f build ]; then
+    echo "ERROR: No build script provided."
+    exit 1
+fi
+
+./build
+
+# Fixup permissions.
+
+echo 'Fixing permissions."
+
+fix-permissions /opt/app-root
