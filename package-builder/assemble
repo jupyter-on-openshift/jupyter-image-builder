@@ -23,6 +23,6 @@ fi
 
 # Fixup permissions.
 
-echo 'Fixing permissions."
+echo "Fixing permissions."
 
 fix-permissions /opt/app-root
