@@ -4,43 +4,111 @@ set -x
 
 set -eo pipefail
 
-# Move files to src directory for building.
+# Move files from where S2I injects them to src directory for building.
 
-shopt -s dotglob
+echo "Moving source files into place."
 
-mv /tmp/src/* ./
+(shopt -s dotglob; mv /tmp/src/* ./)
 
-# ...
+# Fail if no packages have been injected into the container via the S2I
+# process.
 
-ls -las .s2i/packages || true
+echo "Checking if runtime packages exist."
 
-test -d .s2i/packages || { echo 'NO PACKAGES'; exit 1; }
+if [ ! -d .s2i/packages ]; then
+    echo "ERROR: No runtime packages have been provided." 
+    exit 1
+fi
 
-# Run assemble scripts for each required package.
+# Determine default Python runtime to use.
 
-.s2i/packages/parts/python-3.5/assemble
+if [ -f runtime.txt ]; then
+    PYTHON_RUNTIME=`cat runtime.txt`
+fi
 
-ls -las /opt/app-root/packages/parts/*
+if [ x"$PYTHON_RUNTIME" = x"" ]; then
+    # If no runtime specified work out if should use Anaconda Python
+    # vs normal PSF Python by looking for presence of environment.yml.
 
-. /opt/app-root/packages/parts/python-3.5/activate
-
-ln -s python3.5 /opt/app-root/packages/parts/python-3.5/bin/python
-
-curl -sSL 'https://bootstrap.pypa.io/get-pip.py' | python
-
-if [ ! -f /opt/app-root/packages/parts/python-3.5/bin/pip ]; then
-    if [ -f /opt/app-root/packages/parts/python-3.5/bin/pip3.5 ]; then
-        ln -s pip3.5 /opt/app-root/packages/parts/python-3.5/bin/pip
+    if [ -f environment.yml ]; then
+        PYTHON_RUNTIME=conda-4.2
+    else
+        PYTHON_RUNTIME=python-3.5
     fi
 fi
 
-echo $PATH
+case $PYTHON_RUNTIME in
+    #conda-4.2)
+    #    PYTHON_VERSION=3.5
+    #    ;;
+    #conda-5.0)
+    #    PYTHON_VERSION=3.6
+    #    ;;
+    #python-2.7)
+    #    PYTHON_VERSION=2.7
+    #    ;;
+    python-3.5)
+        PYTHON_VERSION=3.5
+        ;;
+    python-3.6)
+        PYTHON_VERSION=3.6
+        ;;
+    *)
+        echo "ERROR: Invalid Python runtime specified."
+        exit 1
+        ;;
+esac
 
-pip install -U setuptools wheel
+case $PYTHON_RUNTIME in
+    python-3.*)
+        .s2i/packages/$PYTHON_RUNTIME/assemble
 
-# Install requirements for running Jupyter notebooks.
+        . /opt/app-root/packages/$PYTHON_RUNTIME/activate
 
-pip install "notebook==5.2.*" "jupyterhub==0.8.*"
+        pip3 install --no-cache-dir "notebook==5.2.*" "jupyterhub==0.8.*"
+
+        if [ -f requirements.txt ]; then
+            pip3 install --no-cache-dir -r requirements.txt
+        fi
+
+        if [ -f packages.txt ]; then
+            if grep '^python-2.7$'; then
+                .s2i/packages/python-2.7/assemble
+
+                . /opt/app-root/packages/python-2.7/activate
+
+                ln -fs python2.7 /opt/app-root/packages/python-2.7/bin/python2
+
+                curl -sSL 'https://bootstrap.pypa.io/get-pip.py' | python2.7
+
+                ln -fs pip2 /opt/app-root/packages/python-2.7/bin/pip2.7
+
+                ls -las /opt/app-root/packages/python-2.7/bin
+
+                pip2.7 install --no-cache-dir -U setuptools wheel
+
+                pip2.7 install --no-cache-dir "ipykernel==4.6.*"
+
+                python2.7 -m ipykernel install --user
+
+                python3 -m ipykernel install --user
+
+                if [ -f requirements.txt ]; then
+                    pip2.7 install --no-cache-dir -r requirements.txt
+                fi
+            fi
+        fi
+
+        ;;
+
+    #conda-*)
+    #    ;;
+
+    *)
+        echo "ERROR: Whoops, not sure what to do for this runtime."
+        exit 1
+        ;;
+esac
 
 jupyter notebook --generate-config
 
@@ -54,13 +122,7 @@ if password:
     del os.environ['JUPYTER_NOTEBOOK_PASSWORD']
 EOF
 
-# Install packages required by the Jupyter notebook.
-
-if [ -f requirements.txt ]; then
-    pip install -r requirements.txt
-fi
-
-# Remove packages which were not used.
+# Remove runtime packages which were not required.
 
 rm -rf .s2i/packages
 
