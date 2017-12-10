@@ -1,0 +1,69 @@
+#!/bin/bash
+
+set -x
+
+set -eo pipefail
+
+# Move files to src directory for building.
+
+shopt -s dotglob
+
+mv /tmp/src/* ./
+
+# ...
+
+ls -las .s2i/packages || true
+
+test -d .s2i/packages || { echo 'NO PACKAGES'; exit 1; }
+
+# Run assemble scripts for each required package.
+
+.s2i/packages/parts/python-3.5/assemble
+
+ls -las /opt/app-root/packages/parts/*
+
+. /opt/app-root/packages/parts/python-3.5/activate
+
+ln -s python3.5 /opt/app-root/packages/parts/python-3.5/bin/python
+
+curl -sSL 'https://bootstrap.pypa.io/get-pip.py' | python
+
+if [ ! -f /opt/app-root/packages/parts/python-3.5/bin/pip ]; then
+    if [ -f /opt/app-root/packages/parts/python-3.5/bin/pip3.5 ]; then
+        ln -s pip3.5 /opt/app-root/packages/parts/python-3.5/bin/pip
+    fi
+fi
+
+echo $PATH
+
+pip install -U setuptools wheel
+
+# Install requirements for running Jupyter notebooks.
+
+pip install "notebook==5.2.*" "jupyterhub==0.8.*"
+
+jupyter notebook --generate-config
+
+cat >> $HOME/.jupyter/jupyter_notebook_config.py << EOF
+import os
+password = os.environ.get('JUPYTER_NOTEBOOK_PASSWORD')
+if password:
+    import notebook.auth
+    c.NotebookApp.password = notebook.auth.passwd(password)
+    del password
+    del os.environ['JUPYTER_NOTEBOOK_PASSWORD']
+EOF
+
+# Install packages required by the Jupyter notebook.
+
+if [ -f requirements.txt ]; then
+    pip install -r requirements.txt
+fi
+
+# Remove packages which were not used.
+
+rm -rf .s2i/packages
+
+# Fixup permissions.
+
+fix-permissions /opt/app-root

@@ -1,5 +1,0 @@
-#!/bin/bash
-
-cat <<EOF
-This is a S2I builder for creating customised Jupyter notebook images.
-EOF

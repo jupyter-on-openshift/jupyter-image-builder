@@ -1,5 +1,0 @@
-#!/bin/bash
-
-# This image should never be run as an application so run the usage script.
-
-exec /opt/app-root/builder/usage
