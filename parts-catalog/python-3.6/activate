@@ -1,5 +1,3 @@
-#!/bin/bash
-
 PATH=/opt/app-root/packages/parts/python-3.6/bin:$PATH
 export PATH
 
