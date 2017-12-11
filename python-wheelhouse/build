@@ -7,7 +7,7 @@ set -eo pipefail
 # Work out what version of Python we are being used with by looking in
 # the /opt/app-root/packages directory.
 
-PYTHON_RUNTIME=${PYTHON_RUNTIME:-`ls -d /opt/app-root/packages/python-*`}
+PYTHON_RUNTIME=${PYTHON_RUNTIME:-`basename /opt/app-root/packages/python-*`}
 
 . /opt/app-root/packages/$PYTHON_RUNTIME/activate
 
