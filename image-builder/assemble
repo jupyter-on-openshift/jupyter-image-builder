@@ -80,7 +80,8 @@ case $PYTHON_RUNTIME in
 
                     pip$xy install "ipykernel==4.6.*"
 
-                    python$xy -m ipykernel install --user
+                    python$xy -m ipykernel install --user --name $kernel \
+                            --display-name "Python $xy"
 
                     ;;
 
@@ -93,11 +94,12 @@ case $PYTHON_RUNTIME in
 
         runtime $PYTHON_RUNTIME
 
-        pip3 install "notebook==5.2.*" "jupyterhub==0.8.*"
-
-        python3 -m ipykernel install --user
-
         xy=`echo $PYTHON_RUNTIME | sed -e 's/python-\(.*\)$/\1/'`
+
+        pip$xy install "notebook==5.2.*" "jupyterhub==0.8.*"
+
+        python3 -m ipykernel install --user --name $PYTHON_RUNTIME \
+                --display-name "Python $xy"
 
         if [ -f requirements.txt ]; then
             pip$xy install -r requirements.txt
