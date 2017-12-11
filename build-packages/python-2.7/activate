@@ -1,8 +1,8 @@
-PATH=/opt/app-root/packages/parts/python-2.7/bin:$PATH
+PATH=/opt/app-root/packages/python-2.7/bin:$PATH
 export PATH
 
-LD_RUN_PATH=/opt/app-root/packages/parts/python-2.7/lib:$LD_RUN_PATH
+LD_RUN_PATH=/opt/app-root/packages/python-2.7/lib:$LD_RUN_PATH
 export LD_RUN_PATH
 
-LD_LIBRARY_PATH=/opt/app-root/packages/parts/python-2.7/lib:$LD_LIBRARY_PATH
+LD_LIBRARY_PATH=/opt/app-root/packages/python-2.7/lib:$LD_LIBRARY_PATH
 export LD_LIBRARY_PATH
