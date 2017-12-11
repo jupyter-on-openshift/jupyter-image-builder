@@ -68,12 +68,6 @@ fi
 
 case $PYTHON_RUNTIME in
     python-3.*)
-        runtime $PYTHON_RUNTIME
-
-        pip3 install "notebook==5.2.*" "jupyterhub==0.8.*"
-
-        python3 -m ipykernel install --user
-
         for kernel in $JUPYTER_KERNELS; do
             case $kernel in
                 $PYTHON_RUNTIME)
@@ -82,7 +76,7 @@ case $PYTHON_RUNTIME in
                 python-*)
                     require $kernel
 
-		    xy=`echo $kernel | sed -e 's/python-\(.*\)\.[0-9]*$/\1/'`
+		    xy=`echo $kernel | sed -e 's/python-\(.*\)$/\1/'`
 
                     pip$xy install "ipykernel==4.6.*"
 
@@ -97,8 +91,16 @@ case $PYTHON_RUNTIME in
             esac
         done
 
+        runtime $PYTHON_RUNTIME
+
+        pip3 install "notebook==5.2.*" "jupyterhub==0.8.*"
+
+        python3 -m ipykernel install --user
+
+        xy=`echo $PYTHON_RUNTIME | sed -e 's/python-\(.*\)$/\1/'`
+
         if [ -f requirements.txt ]; then
-            pip3 install -r requirements.txt
+            pip$xy install -r requirements.txt
         fi
 
         ;;
