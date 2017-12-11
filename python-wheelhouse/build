@@ -1,0 +1,23 @@
+#!/bin/bash
+
+set -x
+
+set -eo pipefail
+
+# Work out what version of Python we are being used with by looking in
+# the /opt/app-root/packages directory.
+
+PYTHON_RUNTIME=${PYTHON_RUNTIME:-`ls /opt/app-root/packages/python-*`}
+
+# Populate the wheelhouse directory with compiled Python packages.
+
+PIP_WHEEL_DIR=/opt/app-root/wheelhouse/$PYTHON_RUNTIME
+export PIP_WHEEL_DIR
+
+mkdir -p $PIP_WHEEL_DIR
+
+xy=`echo $PYTHON_RUNTIME | sed -e 's/python-\(.*\)$/\1/'`
+
+echo " -----> Generating wheels for Python packages."
+
+pip$xy wheel -r requirements.txt
