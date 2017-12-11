@@ -4,6 +4,16 @@ set -x
 
 set -eo pipefail
 
+# Define some common functions to use later.
+
+require() {
+    if [ ! -d /opt/app-root/packages/$1 ]; then
+        .s2i/packages/$1/assemble
+
+        . /opt/app-root/packages/$1/activate
+    fi
+}
+
 # Move files from where S2I injects them to src directory for building.
 
 echo "Moving source files into place."
@@ -22,10 +32,6 @@ fi
 
 # Determine default Python runtime to use.
 
-if [ -f runtime.txt ]; then
-    PYTHON_RUNTIME=`cat runtime.txt`
-fi
-
 if [ x"$PYTHON_RUNTIME" = x"" ]; then
     # If no runtime specified work out if should use Anaconda Python
     # vs normal PSF Python by looking for presence of environment.yml.
@@ -38,65 +44,38 @@ if [ x"$PYTHON_RUNTIME" = x"" ]; then
 fi
 
 case $PYTHON_RUNTIME in
-    #conda-4.2)
-    #    PYTHON_VERSION=3.5
-    #    ;;
-    #conda-5.0)
-    #    PYTHON_VERSION=3.6
-    #    ;;
-    #python-2.7)
-    #    PYTHON_VERSION=2.7
-    #    ;;
-    python-3.5)
-        PYTHON_VERSION=3.5
-        ;;
-    python-3.6)
-        PYTHON_VERSION=3.6
-        ;;
-    *)
-        echo "ERROR: Invalid Python runtime specified."
-        exit 1
-        ;;
-esac
-
-case $PYTHON_RUNTIME in
     python-3.*)
-        .s2i/packages/$PYTHON_RUNTIME/assemble
+        require $PYTHON_RUNTIME
 
-        . /opt/app-root/packages/$PYTHON_RUNTIME/activate
+        pip3 install "notebook==5.2.*" "jupyterhub==0.8.*"
 
-        pip3 install --no-cache-dir "notebook==5.2.*" "jupyterhub==0.8.*"
+        python3 -m ipykernel install --user
+
+        for kernel in $JUPYTER_KERNELS; do
+            case $kernel in
+                $PYTHON_RUNTIME)
+                    ;;
+
+                python-*)
+                    require $kernel
+
+                    xy=`echo $kernel | sed -e 's/python-\(.*\)\.[0-9]*$/\1/'`
+
+                    pip$xy install "ipykernel==4.6.*"
+
+                    python$xy -m ipykernel install --user
+
+                    ;;
+
+                *)
+                    echo "ERROR: Whoops, not sure what to do for this kernel."
+                    exit 1
+                    ;;
+            esac
+        done
 
         if [ -f requirements.txt ]; then
-            pip3 install --no-cache-dir -r requirements.txt
-        fi
-
-        if [ -f packages.txt ]; then
-            if grep '^python-2.7$'; then
-                .s2i/packages/python-2.7/assemble
-
-                . /opt/app-root/packages/python-2.7/activate
-
-                ln -fs python2.7 /opt/app-root/packages/python-2.7/bin/python2
-
-                curl -sSL 'https://bootstrap.pypa.io/get-pip.py' | python2.7
-
-                ln -fs pip2 /opt/app-root/packages/python-2.7/bin/pip2.7
-
-                ls -las /opt/app-root/packages/python-2.7/bin
-
-                pip2.7 install --no-cache-dir -U setuptools wheel
-
-                pip2.7 install --no-cache-dir "ipykernel==4.6.*"
-
-                python2.7 -m ipykernel install --user
-
-                python3 -m ipykernel install --user
-
-                if [ -f requirements.txt ]; then
-                    pip2.7 install --no-cache-dir -r requirements.txt
-                fi
-            fi
+            pip3 install -r requirements.txt
         fi
 
         ;;
