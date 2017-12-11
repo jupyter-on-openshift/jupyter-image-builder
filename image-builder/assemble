@@ -19,6 +19,24 @@ require() {
     fi
 }
 
+runtime() {
+    require $1
+
+    xy=`echo $1 | sed -e 's/python-\(.*\)\.[0-9]*$/\1/'`
+
+    OLDPWD=$PWD
+
+    cd /opt/app-root/packages/$1/bin
+
+    ln -fs python$xy python
+    ln -fs python$xy python3
+
+    ln -fs pip$xy pip
+    ln -fs pip$xy pip3
+
+    cd $OLDPWD
+}
+
 # Move files from where S2I injects them to src directory for building.
 
 echo "Moving source files into place."
@@ -50,7 +68,7 @@ fi
 
 case $PYTHON_RUNTIME in
     python-3.*)
-        require $PYTHON_RUNTIME
+        runtime $PYTHON_RUNTIME
 
         pip3 install "notebook==5.2.*" "jupyterhub==0.8.*"
 
@@ -64,7 +82,7 @@ case $PYTHON_RUNTIME in
                 python-*)
                     require $kernel
 
-                    xy=`echo $kernel | sed -e 's/python-\(.*\)\.[0-9]*$/\1/'`
+		    xy=`echo $kernel | sed -e 's/python-\(.*\)\.[0-9]*$/\1/'`
 
                     pip$xy install "ipykernel==4.6.*"
 

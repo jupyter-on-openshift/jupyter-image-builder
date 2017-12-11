@@ -70,13 +70,7 @@ PATH=$DEST_DIR/bin:$PATH
 
 curl -sSL 'https://bootstrap.pypa.io/get-pip.py' | python$XY
 
-ln -fs python$XY python
-ln -fs python$XY python3
-
-ln -fs pip$XY pip
-ln -fs pip$XY pip3
-
-pip3 install --no-cache-dir -U setuptools wheel
+pip$XY install --no-cache-dir -U setuptools wheel
 
 # Remove tests and compiled Python files to try and reduce the size
 # of the image. We are going to be running long lived process so not
