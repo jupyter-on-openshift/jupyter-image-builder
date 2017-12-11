@@ -22,7 +22,7 @@ require() {
 runtime() {
     require $1
 
-    xy=`echo $1 | sed -e 's/python-\(.*\)\.[0-9]*$/\1/'`
+    xy=`echo $1 | sed -e 's/python-\(.*\)$/\1/'`
 
     OLDPWD=$PWD
 
