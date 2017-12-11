@@ -132,9 +132,10 @@ if password:
     del os.environ['JUPYTER_NOTEBOOK_PASSWORD']
 EOF
 
-# Remove runtime packages which were not required.
+# Remove runtime packages which were not required as well as the wheelhouse.
 
 rm -rf .s2i/packages
+rm -rf .s2i/wheelhouse
 
 # Fixup permissions.
 
