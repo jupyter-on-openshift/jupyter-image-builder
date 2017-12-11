@@ -101,7 +101,7 @@ case $PYTHON_RUNTIME in
 
         xy=`echo $PYTHON_RUNTIME | sed -e 's/python-\(.*\)$/\1/'`
 
-        pip$xy install "notebook==5.2.*" "jupyterhub==0.8.*"
+        #pip$xy install "notebook==5.2.*" "jupyterhub==0.8.*"
 
         python3 -m ipykernel install --user --display-name "Python $xy"
 
