@@ -8,6 +8,11 @@ set -eo pipefail
 
 require() {
     if [ ! -d /opt/app-root/packages/$1 ]; then
+        if [ ! -f .s2i/packages/$1/assemble ]; then
+            echo "ERROR: No runtime package $1 available." 
+            exit 1
+        fi
+
         .s2i/packages/$1/assemble
 
         . /opt/app-root/packages/$1/activate
