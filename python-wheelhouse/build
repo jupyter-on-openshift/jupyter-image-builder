@@ -9,7 +9,7 @@ set -eo pipefail
 
 PYTHON_RUNTIME=${PYTHON_RUNTIME:-`ls -d /opt/app-root/packages/python-*`}
 
-. /opt/app-root/packages/${PYTHON_RUNTIME/activate
+. /opt/app-root/packages/$PYTHON_RUNTIME/activate
 
 # Populate the wheelhouse directory with compiled Python packages.
 
