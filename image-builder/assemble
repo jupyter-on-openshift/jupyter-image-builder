@@ -100,6 +100,11 @@ case $PYTHON_RUNTIME in
 
         python3 -m ipykernel install --user --display-name "Python $xy"
 
+	if [ -d /opt/app-root/wheelhouse/$PYTHON_RUNTIME ]; then
+	    PIP_FIND_LINKS=/opt/app-root/wheelhouse/$PYTHON_RUNTIME
+	    export PIP_FIND_LINKS
+	fi
+
         if [ -f requirements.txt ]; then
             pip$xy install -r requirements.txt
         fi
