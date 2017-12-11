@@ -100,8 +100,8 @@ case $PYTHON_RUNTIME in
 
         python3 -m ipykernel install --user --display-name "Python $xy"
 
-	if [ -d /opt/app-root/wheelhouse/$PYTHON_RUNTIME ]; then
-	    PIP_FIND_LINKS=/opt/app-root/wheelhouse/$PYTHON_RUNTIME
+	if [ -d .s2i/wheelhouse/$PYTHON_RUNTIME ]; then
+	    PIP_FIND_LINKS=/opt/app-root/src/.s2i/wheelhouse/$PYTHON_RUNTIME
 	    export PIP_FIND_LINKS
 	fi
 
