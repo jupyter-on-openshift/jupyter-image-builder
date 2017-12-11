@@ -22,4 +22,5 @@ xy=`echo $PYTHON_RUNTIME | sed -e 's/python-\(.*\)$/\1/'`
 
 echo " -----> Generating wheels for Python packages."
 
-pip$xy wheel -r requirements.txt
+pip$xy wheel -r jupyter-notebook.txt
+pip$xy wheel -r python-datascience-handbook.txt
