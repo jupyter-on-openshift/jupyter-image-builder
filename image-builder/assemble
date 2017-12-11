@@ -94,16 +94,16 @@ case $PYTHON_RUNTIME in
 
         runtime $PYTHON_RUNTIME
 
+	if [ -d .s2i/wheelhouse/$PYTHON_RUNTIME ]; then
+	    PIP_FIND_LINKS=/opt/app-root/src/.s2i/wheelhouse/$PYTHON_RUNTIME
+	    export PIP_FIND_LINKS
+	fi
+
         xy=`echo $PYTHON_RUNTIME | sed -e 's/python-\(.*\)$/\1/'`
 
         pip$xy install "notebook==5.2.*" "jupyterhub==0.8.*"
 
         python3 -m ipykernel install --user --display-name "Python $xy"
-
-	if [ -d .s2i/wheelhouse/$PYTHON_RUNTIME ]; then
-	    PIP_FIND_LINKS=/opt/app-root/src/.s2i/wheelhouse/$PYTHON_RUNTIME
-	    export PIP_FIND_LINKS
-	fi
 
         if [ -f requirements.txt ]; then
             pip$xy install -r requirements.txt
