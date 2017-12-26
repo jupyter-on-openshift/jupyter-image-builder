@@ -22,17 +22,15 @@ require() {
 runtime() {
     require $1
 
-    xy=`echo $1 | sed -e 's/python-\(.*\)$/\1/'`
-
     OLDPWD=$PWD
 
     cd /opt/app-root/packages/$1/bin
 
-    ln -fs python$xy python
-    ln -fs python$xy python3
+    ln -fs python$2 python
+    ln -fs python$2 python3
 
-    ln -fs pip$xy pip
-    ln -fs pip$xy pip3
+    ln -fs pip$2 pip
+    ln -fs pip$2 pip3
 
     cd $OLDPWD
 }
@@ -92,16 +90,16 @@ case $PYTHON_RUNTIME in
             esac
         done
 
-        runtime $PYTHON_RUNTIME
+        xy=`echo $PYTHON_RUNTIME | sed -e 's/python-\(.*\)$/\1/'`
+
+        runtime $PYTHON_RUNTIME $xy
 
 	if [ -d .s2i/wheelhouse/$PYTHON_RUNTIME ]; then
 	    PIP_FIND_LINKS=/opt/app-root/src/.s2i/wheelhouse/$PYTHON_RUNTIME
 	    export PIP_FIND_LINKS
 	fi
 
-        xy=`echo $PYTHON_RUNTIME | sed -e 's/python-\(.*\)$/\1/'`
-
-        pip$xy install "notebook==5.2.*" "jupyterhub==0.8.*"
+        pip3 install "notebook==5.2.*" "jupyterhub==0.8.*"
 
         python3 -m ipykernel install --user --display-name "Python $xy"
 
@@ -112,7 +110,7 @@ case $PYTHON_RUNTIME in
         ;;
 
     conda-4.2)
-        runtime $PYTHON_RUNTIME
+        runtime $PYTHON_RUNTIME 3.6
 
 	if [ -d .s2i/wheelhouse/$PYTHON_RUNTIME ]; then
 	    PIP_FIND_LINKS=/opt/app-root/src/.s2i/wheelhouse/$PYTHON_RUNTIME
