@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -x
+
+set -eo pipefail
+
+mkdir -p /opt/app-root/packages
+
+mv /opt/app-root/src/.s2i/packages/conda-4.3 /opt/app-root/packages
+
+cat >> /opt/app-root/etc/scl_enable << EOF
+. /opt/app-root/packages/conda-4.3/activate
+EOF

@@ -1,0 +1,39 @@
+#!/bin/bash
+
+set -x
+
+set -eo pipefail
+
+XYZ=4.2.12
+
+XY=`echo $XYZ | sed -e 's/\.[0-9]*$//'`
+
+BLD_DIR=/tmp/build
+
+DEST_DIR=/opt/app-root/packages/conda-$XY
+
+DOWNLOAD_URL=https://repo.continuum.io/miniconda/Miniconda3-$XYZ-Linux-x86_64.sh
+
+mkdir $BLD_DIR
+
+curl -sSL -o $BLD_DIR/miniconda3.sh $DOWNLOAD_URL
+
+bash $BLD_DIR/miniconda3.sh -b -p $DEST_DIR
+
+cp $DEST_DIR/bin/pip $DEST_DIR/bin/pip3
+cp $DEST_DIR/bin/pip $DEST_DIR/bin/pip3.5
+
+# Packages need to be placed under /opt/app-root/packages. We need to
+# leave an assemble and activate script. The assemble script moves any
+# packages into place in a subsequent chained build. The activate script
+# sets up any environment for using the package.
+
+mv assemble $DEST_DIR
+mv activate $DEST_DIR
+
+# Build Python into temporary directory. We will delete the directory
+# when done so only Python installation remains in the image.
+
+# Remove build directory and input files to S2I build.
+
+rm -rf $BLD_DIR
