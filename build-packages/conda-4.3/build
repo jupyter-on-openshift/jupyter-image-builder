@@ -14,6 +14,8 @@ DEST_DIR=/opt/app-root/packages/conda-$XY
 
 DOWNLOAD_URL=https://repo.continuum.io/miniconda/Miniconda3-$XYZ-Linux-x86_64.sh
 
+# Work in a temporary build directory. We will delete this when done.
+
 mkdir $BLD_DIR
 
 curl -sSL -o $BLD_DIR/miniconda3.sh $DOWNLOAD_URL
@@ -30,9 +32,6 @@ cp $DEST_DIR/bin/pip $DEST_DIR/bin/pip3.6
 
 mv assemble $DEST_DIR
 mv activate $DEST_DIR
-
-# Build Python into temporary directory. We will delete the directory
-# when done so only Python installation remains in the image.
 
 # Remove build directory and input files to S2I build.
 
