@@ -119,7 +119,7 @@ case $PYTHON_RUNTIME in
 	    export PIP_FIND_LINKS
 	fi
 
-        xy=`echo $PYTHON_RUNTIME | sed -e 's/python-\(.*\)$/\1/'`
+        xy=`echo $PYTHON_RUNTIME | sed -e 's/conda-\(.*\)$/\1/'`
 
         pip$xy install "notebook==5.2.*" "jupyterhub==0.8.*"
 
