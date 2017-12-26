@@ -99,12 +99,12 @@ case $PYTHON_RUNTIME in
 	    export PIP_FIND_LINKS
 	fi
 
-        pip3 install "notebook==5.2.*" "jupyterhub==0.8.*"
+        pip install "notebook==5.2.*" "jupyterhub==0.8.*"
 
-        python3 -m ipykernel install --user --display-name "Python $xy"
+        python -m ipykernel install --user --display-name "Python $xy"
 
         if [ -f requirements.txt ]; then
-            pip$xy install -r requirements.txt
+            pip install -r requirements.txt
         fi
 
         ;;
@@ -117,11 +117,9 @@ case $PYTHON_RUNTIME in
 	    export PIP_FIND_LINKS
 	fi
 
-        xy=`echo $PYTHON_RUNTIME | sed -e 's/conda-\(.*\)$/\1/'`
-
         pip3 install "notebook==5.2.*" "jupyterhub==0.8.*"
 
-        python3 -m ipykernel install --user --display-name "Python $xy"
+        python3 -m ipykernel install --user --display-name "Python 3.6"
 
         if [ -f requirements.txt ]; then
             pip3 install -r requirements.txt
