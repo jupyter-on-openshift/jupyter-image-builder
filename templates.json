@@ -169,6 +169,18 @@
                                             "sourcePath": "/opt/app-root/packages"
                                         }
                                     ]
+                                },
+                                {
+                                    "from": {
+                                        "kind": "ImageStreamTag",
+                                        "name": "packages-julia-06:latest"
+                                    },
+                                    "paths": [
+                                        {
+                                            "destinationDir": ".s2i",
+                                            "sourcePath": "/opt/app-root/packages"
+                                        }
+                                    ]
                                 }
                             ]
                         },

@@ -66,6 +66,23 @@ fi
 
 case $PYTHON_RUNTIME in
     python-3.*)
+        xy=`echo $PYTHON_RUNTIME | sed -e 's/python-\(.*\)$/\1/'`
+
+        runtime $PYTHON_RUNTIME $xy
+
+	if [ -d .s2i/wheelhouse/$PYTHON_RUNTIME ]; then
+	    PIP_FIND_LINKS=/opt/app-root/src/.s2i/wheelhouse/$PYTHON_RUNTIME
+	    export PIP_FIND_LINKS
+	fi
+
+        pip$xy install "notebook==5.2.*" "jupyterhub==0.8.*"
+
+        python$xy -m ipykernel install --user --display-name "Python $xy"
+
+        if [ -f requirements.txt ]; then
+            pip$xy install -r requirements.txt
+        fi
+
         for kernel in $JUPYTER_KERNELS; do
             case $kernel in
                 $PYTHON_RUNTIME)
@@ -83,29 +100,19 @@ case $PYTHON_RUNTIME in
 
                     ;;
 
+                julia-*)
+                    require $kernel
+
+                    julia -e 'Pkg.init(); Pkg.add("IJulia"); using IJulia;'
+
+                    ;;
+
                 *)
                     echo "ERROR: Whoops, not sure what to do for this kernel."
                     exit 1
                     ;;
             esac
         done
-
-        xy=`echo $PYTHON_RUNTIME | sed -e 's/python-\(.*\)$/\1/'`
-
-        runtime $PYTHON_RUNTIME $xy
-
-	if [ -d .s2i/wheelhouse/$PYTHON_RUNTIME ]; then
-	    PIP_FIND_LINKS=/opt/app-root/src/.s2i/wheelhouse/$PYTHON_RUNTIME
-	    export PIP_FIND_LINKS
-	fi
-
-        pip$xy install "notebook==5.2.*" "jupyterhub==0.8.*"
-
-        python$xy -m ipykernel install --user --display-name "Python $xy"
-
-        if [ -f requirements.txt ]; then
-            pip$xy install -r requirements.txt
-        fi
 
         ;;
 
@@ -125,6 +132,22 @@ case $PYTHON_RUNTIME in
             pip install -r requirements.txt
         fi
 
+        for kernel in $JUPYTER_KERNELS; do
+            case $kernel in
+                julia-*)
+                    require $kernel
+
+                    julia -e 'Pkg.init(); Pkg.add("IJulia"); using IJulia;'
+
+                    ;;
+
+                *)
+                    echo "ERROR: Whoops, not sure what to do for this kernel."
+                    exit 1
+                    ;;
+            esac
+        done
+
         ;;
 
     conda-4.3)
@@ -142,6 +165,22 @@ case $PYTHON_RUNTIME in
         if [ -f requirements.txt ]; then
             pip install -r requirements.txt
         fi
+
+        for kernel in $JUPYTER_KERNELS; do
+            case $kernel in
+                julia-*)
+                    require $kernel
+
+                    julia -e 'Pkg.init(); Pkg.add("IJulia"); using IJulia;'
+
+                    ;;
+
+                *)
+                    echo "ERROR: Whoops, not sure what to do for this kernel."
+                    exit 1
+                    ;;
+            esac
+        done
 
         ;;
 

@@ -1,0 +1,37 @@
+#!/bin/bash
+
+set -x
+
+set -eo pipefail
+
+XYZ=0.6.2
+
+XY=`echo $XYZ | sed -e 's/\.[0-9]*$//'`
+
+BLD_DIR=/tmp/build
+
+DEST_DIR=/opt/app-root/packages/julia-$XY
+
+DOWNLOAD_URL=https://julialang-s3.julialang.org/bin/linux/x64/$XY/julia-$XYZ-linux-x86_64.tar.gz
+
+# Work in a temporary build directory. We will delete this when done.
+
+mkdir $BLD_DIR
+
+curl -sSL -o $BLD_DIR/julialang.tar.gz $DOWNLOAD_URL
+
+mkdir -p $DEST_DIR
+
+tar -C $DEST_DIR --strip-components 1 -xvz -f $BLD_DIR/julialang.tar.gz
+
+# Packages need to be placed under /opt/app-root/packages. We need to
+# leave an assemble and activate script. The assemble script moves any
+# packages into place in a subsequent chained build. The activate script
+# sets up any environment for using the package.
+
+mv assemble $DEST_DIR
+mv activate $DEST_DIR
+
+# Remove build directory and input files to S2I build.
+
+rm -rf $BLD_DIR
