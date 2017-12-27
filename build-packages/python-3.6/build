@@ -74,7 +74,7 @@ pip$XY install --no-cache-dir -U setuptools wheel
 
 # Install minimal packages to support running Jupyter notebooks.
 
-pip$xy install "notebook==5.2.*" "jupyterhub==0.8.*" "ipykernel==4.7.*"
+pip$XY install "notebook==5.2.*" "jupyterhub==0.8.*" "ipykernel==4.7.*"
 
 # Remove tests and compiled Python files to try and reduce the size
 # of the image. We are going to be running long lived process so not
