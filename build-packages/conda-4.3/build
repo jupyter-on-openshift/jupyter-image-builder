@@ -35,7 +35,8 @@ $DEST_DIR/bin/conda config --system --set show_channel_urls true
 
 # Install minimal packages to support running Jupyter notebooks.
 
-$DEST_DIR/bin/conda install --yes --quiet "notebook=5.2.2" "jupyterhub=0.8.1"
+$DEST_DIR/bin/conda install --yes --quiet \
+    "notebook=5.2.2" "jupyterhub=0.8.1" "ipykernel=4.7.0"
 
 # Clean out caches and anything else when done.
 
