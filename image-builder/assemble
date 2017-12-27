@@ -70,14 +70,12 @@ case $PYTHON_RUNTIME in
 
         runtime $PYTHON_RUNTIME $xy
 
+        python$xy -m ipykernel install --user --display-name "Python $xy"
+
 	if [ -d .s2i/wheelhouse/$PYTHON_RUNTIME ]; then
 	    PIP_FIND_LINKS=/opt/app-root/src/.s2i/wheelhouse/$PYTHON_RUNTIME
 	    export PIP_FIND_LINKS
 	fi
-
-        pip$xy install "notebook==5.2.*" "jupyterhub==0.8.*"
-
-        python$xy -m ipykernel install --user --display-name "Python $xy"
 
         if [ -f requirements.txt ]; then
             pip$xy install -r requirements.txt
@@ -92,8 +90,6 @@ case $PYTHON_RUNTIME in
                     require $kernel
 
 		    xy=`echo $kernel | sed -e 's/python-\(.*\)$/\1/'`
-
-                    pip$xy install "ipykernel==4.6.*"
 
                     python$xy -m ipykernel install --user --name $kernel \
                             --display-name "Python $xy"

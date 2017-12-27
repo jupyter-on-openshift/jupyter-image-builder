@@ -72,6 +72,10 @@ curl -sSL 'https://bootstrap.pypa.io/get-pip.py' | python$XY
 
 pip$XY install --no-cache-dir -U setuptools wheel
 
+# Install minimal packages to support running Jupyter notebooks.
+
+pip$xy install "ipykernel==4.7.*"
+
 # Remove tests and compiled Python files to try and reduce the size
 # of the image. We are going to be running long lived process so not
 # really any benefit from precompiling all Python files.
