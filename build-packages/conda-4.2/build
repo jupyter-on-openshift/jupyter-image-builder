@@ -22,6 +22,27 @@ curl -sSL -o $BLD_DIR/miniconda3.sh $DOWNLOAD_URL
 
 bash $BLD_DIR/miniconda3.sh -b -p $DEST_DIR
 
+# Allow easy direct installs from conda forge.
+
+$DEST_DIR/bin/conda config --system --add channels conda-forge
+
+# Do not attempt to auto update conda or dependencies.
+
+$DEST_DIR/bin/conda config --system --set auto_update_conda false
+# Bug in conda 4.3.>15 prevents --set update_dependencies.
+echo 'update_dependencies: false' >> $DEST_DIR/.condarc
+$DEST_DIR/bin/conda config --system --set show_channel_urls true
+
+# Install minimal packages to support running Jupyter notebooks.
+
+$DEST_DIR/bin/conda install --yes --quiet "notebook=5.2.2" "jupyterhub=0.8.1"
+
+# Clean out caches and anything else when done.
+
+$DEST_DIR/bin/conda clean -tipsy
+
+# For consistency with PSF Python, create versioned commands for pip.
+
 cp $DEST_DIR/bin/pip $DEST_DIR/bin/pip3
 cp $DEST_DIR/bin/pip $DEST_DIR/bin/pip3.5
 

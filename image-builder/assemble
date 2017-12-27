@@ -119,14 +119,12 @@ case $PYTHON_RUNTIME in
     conda-4.2)
         runtime $PYTHON_RUNTIME 3.5
 
+        python -m ipykernel install --user --display-name "Python 3.5"
+
 	if [ -d .s2i/wheelhouse/$PYTHON_RUNTIME ]; then
 	    PIP_FIND_LINKS=/opt/app-root/src/.s2i/wheelhouse/$PYTHON_RUNTIME
 	    export PIP_FIND_LINKS
 	fi
-
-        pip install "notebook==5.2.*" "jupyterhub==0.8.*"
-
-        python -m ipykernel install --user --display-name "Python 3.5"
 
         if [ -f requirements.txt ]; then
             pip install -r requirements.txt
@@ -153,14 +151,12 @@ case $PYTHON_RUNTIME in
     conda-4.3)
         runtime $PYTHON_RUNTIME 3.6
 
+        python -m ipykernel install --user --display-name "Python 3.6"
+
 	if [ -d .s2i/wheelhouse/$PYTHON_RUNTIME ]; then
 	    PIP_FIND_LINKS=/opt/app-root/src/.s2i/wheelhouse/$PYTHON_RUNTIME
 	    export PIP_FIND_LINKS
 	fi
-
-        pip install "notebook==5.2.*" "jupyterhub==0.8.*"
-
-        python -m ipykernel install --user --display-name "Python 3.6"
 
         if [ -f requirements.txt ]; then
             pip install -r requirements.txt
